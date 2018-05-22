@@ -37,6 +37,15 @@ class Player(pygame.sprite.Sprite):
         self.speed = speed
         self.can_jump = True
 
+    def stop(self):
+        self.change_x = 0
+
+    def go_right(self):
+        self.change_x += self.speed
+
+    def go_left(self):
+        self.change_x += -1 * self.speed
+
     def changespeed(self, x, y):
         """ Change the speed of the player. """
         self.change_x += x * self.speed

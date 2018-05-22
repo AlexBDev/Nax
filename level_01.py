@@ -13,3 +13,7 @@ class Level01(Level):
 
     def get_sprites(self):
         return self.platform_list
+
+    @staticmethod
+    def get_position_win_x():
+        return 1500
