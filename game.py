@@ -1,7 +1,7 @@
 import pygame
 from nax.player import Player
 from nax.level_01 import Level01
-from nax.items import Wall, Background
+from nax.items import Background
 from nax import PROJECT_DIR
 
 
@@ -11,6 +11,7 @@ class Game():
             # x, y, with, screen_height
             [0, screen_height - 15, 200, 15],
             [250, screen_height - 15, 550, 15],
+            [350, screen_height - 85, 350, 15],
             [1200, screen_height - 15, 550, 15]
         ])
 

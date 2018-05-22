@@ -1,6 +1,6 @@
 import pygame
 from nax.level import Level
-from nax.items import Wall
+from nax.items import Platform
 
 
 class Level01(Level):
@@ -9,7 +9,7 @@ class Level01(Level):
         self.platform_list = pygame.sprite.Group()
 
         for platform in platforms:
-            self.platform_list.add(Wall(platform[0], platform[1], platform[2], platform[3]))
+            self.platform_list.add(Platform(platform[0], platform[1], platform[2], platform[3]))
 
     def get_sprites(self):
         return self.platform_list

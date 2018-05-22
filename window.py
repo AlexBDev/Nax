@@ -1,7 +1,7 @@
 import pygame
 
 from nax import PROJECT_DIR
-from nax.items import Wall, Background
+from nax.items import Background
 from nax.player import Player
 from nax.level_01 import Level01
 from nax.game import Game

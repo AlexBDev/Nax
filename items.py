@@ -2,7 +2,7 @@ import pygame
 from nax import COLORS
 
 
-class Wall(pygame.sprite.Sprite):
+class Platform(pygame.sprite.Sprite):
     """ Wall the player can run into. """
     def __init__(self, x, y, width, height):
         """ Constructor for the wall that the player can run into. """
