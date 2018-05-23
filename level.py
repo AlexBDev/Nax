@@ -1,12 +1,15 @@
 import abc
+import pygame
+from nax.items import Platform
 
 
 class Level(metaclass=abc.ABCMeta):
+    def __init__(self):
+        self.platform_list = pygame.sprite.Group()
 
-    @abc.abstractmethod
     def get_sprites(self):
-        return NotImplemented
+        return self.platform_list
 
-    @abc.abstractmethod
-    def get_position_win_x(self):
-        return NotImplemented
+    def add_platforms(self, platforms):
+        for platform in platforms:
+            self.platform_list.add(Platform(platform[0], platform[1], platform[2], platform[3]))

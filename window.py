@@ -1,9 +1,5 @@
 import pygame
 
-from nax import PROJECT_DIR
-from nax.items import Background
-from nax.player import Player
-from nax.level_01 import Level01
 from nax.game import Game
 from nax import COLORS
 
@@ -30,7 +26,11 @@ class Window(object):
         while not done:
 
             for event in pygame.event.get():
+
                 if event.type == pygame.QUIT:
+                    done = True
+
+                elif self.game.is_player_win():
                     done = True
 
                 elif event.type == pygame.KEYDOWN:
@@ -39,7 +39,7 @@ class Window(object):
                     elif event.key == pygame.K_RIGHT:
                         self.game.player.go_right()
                     elif event.key == pygame.K_SPACE and self.game.player.can_jump:
-                        self.game.player.changespeed(0, -1)
+                        self.game.player.jump(-1)
 
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT:
@@ -47,7 +47,7 @@ class Window(object):
                     elif event.key == pygame.K_RIGHT:
                         self.game.player.stop()
                     elif event.key == pygame.K_SPACE:
-                        self.game.player.changespeed(0, 1)
+                        self.game.player.jump(1)
                         self.game.player.can_jump = False
 
             if self.game.player.rect.right >= 500:

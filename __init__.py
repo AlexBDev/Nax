@@ -6,3 +6,6 @@ COLORS = {
     'WHITE': (255, 255, 255),
     'BLUE': (50, 50, 255),
 }
+
+SCREEN_WIDTH=960
+SCREEN_HEIGHT=320

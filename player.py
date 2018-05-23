@@ -1,13 +1,6 @@
 import pygame
-
-# Colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-BLUE = (50, 50, 255)
-
-# Screen dimensions
-SCREEN_WIDTH = 960
-SCREEN_HEIGHT = 320
+from nax.spritesheet import SpriteSheet
+from nax import PROJECT_DIR, SCREEN_HEIGHT, COLORS
 
 
 class Player(pygame.sprite.Sprite):
@@ -19,14 +12,62 @@ class Player(pygame.sprite.Sprite):
         # Call the parent's constructor
         super().__init__()
 
-        # Set height, width
-        self.image = pygame.Surface([15, 15])
-        self.image.fill(WHITE)
+        self.walking_frames_l = []
+        self.walking_frames_r = []
+        self.distance = 0
 
         # Make our top-left corner the passed-in location.
+        sprite_sheet = SpriteSheet(PROJECT_DIR+"/assets/Player/p1_walk/p1_walk.png")
+
+        # Load all the right facing images into a list
+        image = sprite_sheet.get_image(0, 0, 66, 90)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(66, 0, 66, 90)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(132, 0, 67, 90)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(0, 93, 66, 90)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(66, 93, 66, 90)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(132, 93, 72, 90)
+        self.walking_frames_r.append(image)
+        image = sprite_sheet.get_image(0, 186, 70, 90)
+        self.walking_frames_r.append(image)
+
+        # Load all the right facing images, then flip them
+        # to face left.
+        image = sprite_sheet.get_image(0, 0, 66, 90)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(66, 0, 66, 90)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(132, 0, 67, 90)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(0, 93, 66, 90)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(66, 93, 66, 90)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(132, 93, 72, 90)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+        image = sprite_sheet.get_image(0, 186, 70, 90)
+        image = pygame.transform.flip(image, True, False)
+        self.walking_frames_l.append(image)
+
+        # Set the image the player starts with
+        self.image = self.walking_frames_r[0]
+
+        # Set a reference to the image rect.
         self.rect = self.image.get_rect()
-        self.rect.y = y
-        self.rect.x = x
+
+
+        # What direction is the player facing?
+        self.direction = "R"
 
         # Set speed vector
         self.change_x = 0
@@ -42,14 +83,15 @@ class Player(pygame.sprite.Sprite):
 
     def go_right(self):
         self.change_x += self.speed
+        self.direction = "R"
 
     def go_left(self):
         self.change_x += -1 * self.speed
+        self.direction = "L"
 
-    def changespeed(self, x, y):
+    def jump(self, x):
         """ Change the speed of the player. """
-        self.change_x += x * self.speed
-        self.change_y += y * self.speed
+        self.change_y += x * self.speed
 
     def update(self):
         """ Move the player. """
@@ -62,6 +104,16 @@ class Player(pygame.sprite.Sprite):
 
         # Move left/right
         self.rect.x += self.change_x
+        self.distance += self.change_x
+        pos = self.rect.x
+
+        if self.direction == "R":
+            frame = (pos // 30) % len(self.walking_frames_r)
+            self.image = self.walking_frames_r[frame]
+        else:
+            frame = (pos // 30) % len(self.walking_frames_l)
+            self.image = self.walking_frames_l[frame]
+
         self._calc_hit_walls()
 
     def _calc_hit_walls(self):
@@ -97,7 +149,7 @@ class Player(pygame.sprite.Sprite):
         if self.change_y == 0:
             self.change_y = 1
         else:
-            self.change_y += .35
+            self.change_y += 1.35
 
         # if self.change_y > SCREEN_HEIGHT:
         #     pygame.event.post(pygame.QUIT)

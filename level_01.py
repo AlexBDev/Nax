@@ -1,18 +1,20 @@
 import pygame
+from nax import SCREEN_HEIGHT
 from nax.level import Level
-from nax.items import Platform
 
 
 class Level01(Level):
+    def __init__(self):
+        super().__init__()
 
-    def __init__(self, platforms):
-        self.platform_list = pygame.sprite.Group()
-
-        for platform in platforms:
-            self.platform_list.add(Platform(platform[0], platform[1], platform[2], platform[3]))
-
-    def get_sprites(self):
-        return self.platform_list
+        self.add_platforms([
+            # x, y, with, screen_height
+            [0, SCREEN_HEIGHT - 15, 200, 15],
+            [250, SCREEN_HEIGHT - 15, 550, 15],
+            [350, SCREEN_HEIGHT - 85, 350, 15],
+            [1000, SCREEN_HEIGHT - 15, 50, 15],
+            [1200, SCREEN_HEIGHT - 15, 550, 15]
+        ])
 
     @staticmethod
     def get_position_win_x():
