@@ -1,7 +1,8 @@
 import pygame
-
+from time import sleep
 from nax.game import Game
-from nax import COLORS
+from nax.timer import GameTimer
+from nax import COLORS, SCREEN_WIDTH
 
 
 class Window(object):
@@ -16,12 +17,13 @@ class Window(object):
         # Set the title of the window
         pygame.display.set_caption('Nax')
 
-        self.game = Game(screen_height)
-
+        self.game = Game()
         self.clock = pygame.time.Clock()
+        self.timer = GameTimer(self.screen)
 
     def run(self):
         done = False
+        self.timer.start()
 
         while not done:
 
@@ -31,6 +33,8 @@ class Window(object):
                     done = True
 
                 elif self.game.is_player_win():
+                    self.game.display_win_screen(self.screen)
+                    sleep(5)
                     done = True
 
                 elif event.type == pygame.KEYDOWN:
@@ -66,6 +70,7 @@ class Window(object):
 
             self.screen.fill(COLORS.get('BLACK'))
             self.screen.blit(self.game.BackGround.image, self.game.BackGround.rect)
+            self.timer.display()
 
             self.game.all_sprite_list.draw(self.screen)
 
