@@ -18,17 +18,14 @@ class Timer:
         return time() - self.time_start
 
 
-class GameTimer:
-    def __init__(self, screen):
-        self.screen = screen
+class GameTimer(Timer):
+    def __init__(self):
+        super().__init__()
+
         self.font = pygame.font.SysFont(None, 24)
-        self.timer = Timer()
 
-    def start(self):
-        self.timer.start()
-
-    def display(self):
-        self.screen.blit(
-            self.font.render("%0.2f" % self.timer.get_time(), True, (0, 0, 0)),
+    def display(self, screen):
+        screen.blit(
+            self.font.render("%0.2f" % self.get_time(), True, (0, 0, 0)),
             (SCREEN_WIDTH - 150, 35)
         )
