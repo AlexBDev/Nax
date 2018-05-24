@@ -1,7 +1,8 @@
 import pygame
 from nax.items import Background
 from nax.spritesheet import SpriteSheet
-from nax import PROJECT_DIR, SCREEN_HEIGHT, COLORS
+from nax import PROJECT_DIR, SCREEN_HEIGHT, COLORS, OPTIONS
+from nax.setting import setting
 
 
 class Player(pygame.sprite.Sprite):
@@ -9,7 +10,7 @@ class Player(pygame.sprite.Sprite):
     controls. """
 
     # Constructor function
-    def __init__(self, x, y, speed=10):
+    def __init__(self, x=0, y=0, speed=10):
         # Call the parent's constructor
         super().__init__()
 
@@ -88,6 +89,9 @@ class Player(pygame.sprite.Sprite):
         # Custom
         self.speed = speed
         self.can_jump = True
+        self.rect.x = x
+        self.rect.y = y
+        self.has_win = False
 
     def stop(self):
         self.change_x = 0
@@ -139,6 +143,10 @@ class Player(pygame.sprite.Sprite):
         # See if we hit anything
         block_hit_list = pygame.sprite.spritecollide(self, self.walls, False)
         for block in block_hit_list:
+            if block.is_end:
+                self.has_win = True
+                return
+
             # If we are moving right,
             # set our right side to the left side of the item we hit
             if self.change_x > 0:
@@ -170,12 +178,12 @@ class Player(pygame.sprite.Sprite):
         else:
             self.change_y += 1.35
 
-        # if self.change_y > SCREEN_HEIGHT:
-        #     pygame.event.post(pygame.QUIT)
-        # See if we are on the ground.
-        if self.rect.y >= SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
-            self.change_y = 0
-            self.rect.y = SCREEN_HEIGHT - self.rect.height
+        if self.change_y > SCREEN_HEIGHT and not setting.is_dev_mode():
+            self.is_die = True
+            # pygame.event.post(pygame.QUIT)
+        # elif self.rect.y >= SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
+        #     self.change_y = 0
+        #     self.rect.y = SCREEN_HEIGHT - self.rect.height
 
     def _calc_collide_enemies(self):
         block_hit_list = pygame.sprite.spritecollide(self, self.enemy_list, False)
@@ -187,7 +195,7 @@ class Player(pygame.sprite.Sprite):
             if self.lives >= 0:
                 self.hearts.remove(self.hearts.sprites()[-1])
 
-            if self.lives == 0:
+            if self.lives == 0 and not setting.is_dev_mode():
                 self.is_die = True
 
             # self.hearts.remove(self.hearts.)

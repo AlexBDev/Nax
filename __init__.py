@@ -1,6 +1,9 @@
 import os
 
 PROJECT_DIR = os.path.dirname(os.path.realpath(__file__))
+SCREEN_WIDTH=960
+SCREEN_HEIGHT=320
+GAME_MODE="play"
 COLORS = {
     'BLACK': (0, 0, 0),
     'WHITE': (255, 255, 255),
@@ -8,5 +11,6 @@ COLORS = {
     'RED': (175, 10, 10),
 }
 
-SCREEN_WIDTH=960
-SCREEN_HEIGHT=320
+OPTIONS = {
+    'GAME_MODE': 'play'
+}

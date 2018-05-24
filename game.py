@@ -3,14 +3,14 @@ from nax.player import Player
 from nax.level_01 import Level01
 from nax import PROJECT_DIR, COLORS
 from nax.timer import GameTimer
-from time import time, sleep
-
+from time import sleep
+from nax.setting import setting
 
 class Game():
     def __init__(self, screen):
         self.screen = screen
         self.timer = GameTimer()
-        self.player = Player(50, 50, 15)
+        self.player = Player(0,         0, 15)
         self.level = Level01(self.player)
         self.platform_sprites = self.level.get_sprites()
         self.player.walls = self.platform_sprites
@@ -22,13 +22,6 @@ class Game():
     def event(self, event):
         if event.type == pygame.QUIT:
             return True
-
-        elif self.is_player_win():
-            self.timer.stop()
-            self.display_win_screen(self.screen)
-            sleep(5)
-            return True
-
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 self.player.go_left()
@@ -44,11 +37,17 @@ class Game():
                 self.player.stop()
             elif event.key == pygame.K_SPACE:
                 self.player.jump(1)
-                self.player.can_jump = False
+                if not setting.is_dev_mode():
+                    self.player.can_jump = False
 
         return False
 
     def update(self):
+        print(self.player.is_die)
+        if self.player.is_die:
+            self.display_die_screen()
+            sleep(6)
+
         for enemy in self.level.enemy_list:
             if enemy.is_die:
                 self.level.enemy_list.remove(enemy)
@@ -56,10 +55,13 @@ class Game():
         self.all_sprite_list.update()
         self.level.update()
 
-        if self.player.is_die:
-            self.display_die_screen()
+        if self.player.has_win:
+            self.display_win_screen(self.screen)
             sleep(6)
             pygame.event.post(pygame.event.Event(pygame.QUIT))
+
+
+            # pygame.event.post(pygame.event.Event(pygame.QUIT))
 
 
     def draw(self):
