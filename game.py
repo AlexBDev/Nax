@@ -18,6 +18,9 @@ class Game():
         self.all_sprite_list = pygame.sprite.Group()
         self.all_sprite_list.add(self.player)
         self.timer.start()
+        pygame.mixer.music.load(PROJECT_DIR + "/assets/music.mp3")
+        pygame.mixer.music.play(-1)
+
 
     def event(self, event):
         if event.type == pygame.QUIT:
@@ -53,12 +56,12 @@ class Game():
 
         if self.player.has_win:
             self.display_win_screen(self.screen)
-            sleep(6)
+            sleep(.5)
             pygame.event.post(pygame.event.Event(pygame.QUIT))
 
         if self.player.is_die:
             self.display_die_screen()
-            sleep(6)
+            sleep(.5)
             pygame.event.post(pygame.event.Event(pygame.QUIT))
 
 

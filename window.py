@@ -15,10 +15,15 @@ class Window(object):
 
     def run(self):
         done = False
+        restart = False
 
         while not done:
             for event in pygame.event.get():
-                done = self.game.event(event)
+                restart = self.game.event(event)
+
+            if restart:
+                self.game = Game(self.screen)
+                restart = False
 
             pygame.display.flip()
             self.game.update()

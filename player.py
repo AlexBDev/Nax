@@ -3,7 +3,7 @@ from nax.items import Background
 from nax.spritesheet import SpriteSheet
 from nax import PROJECT_DIR, SCREEN_HEIGHT, COLORS, OPTIONS
 from nax.setting import setting
-
+from time import time
 
 class Player(pygame.sprite.Sprite):
     """ This class represents the bar at the bottom that the player
@@ -22,6 +22,7 @@ class Player(pygame.sprite.Sprite):
         self.hit_times = 0
         self.lives = 3
         self.hearts = pygame.sprite.Group()
+        self.timer_hit = None
 
         i = 0
         while i < self.lives:
@@ -117,13 +118,6 @@ class Player(pygame.sprite.Sprite):
         # Move left/right
         self.rect.x += self.change_x
         # self.distance += self.change_x
-        if self.is_hit:
-            self.hit_times += 1
-            if self.hit_times == 10:
-                self.is_hit = False
-                self.change_y = 0
-                self.change_x = 0
-                self.hit_times = 0
 
         pos = self.rect.x
         if self.direction == "R":
@@ -182,11 +176,25 @@ class Player(pygame.sprite.Sprite):
             self.rect.y = SCREEN_HEIGHT - self.rect.height
 
     def _calc_collide_enemies(self):
+        if self.is_hit:
+            self.hit_times += 1
+            if self.hit_times == 10:
+                self.is_hit = False
+                self.change_y = 0
+                self.change_x = 0
+                self.hit_times = 0
+
+        if self.timer_hit is not None and (time() - self.timer_hit < .8):
+            return
+
+        self.timer_hit = None
+
         block_hit_list = pygame.sprite.spritecollide(self, self.enemy_list, False)
         for block in block_hit_list:
             diff = self.rect.x - block.rect.x
             self.is_hit = True
             self.lives -= 1
+            self.timer_hit = time()
 
             if self.lives >= 0:
                 self.hearts.remove(self.hearts.sprites()[-1])
