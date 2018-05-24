@@ -64,7 +64,9 @@ class Game():
 
     def draw(self):
         self.level.draw(self.screen)
+        # self.screen.blit(self.player.hearts.image)
         self.all_sprite_list.draw(self.screen)
+        self.player.hearts.draw(self.screen)
         self.timer.display(self.screen)
 
     def is_player_win(self):

@@ -1,4 +1,5 @@
 import pygame
+from nax.items import Background
 from nax.spritesheet import SpriteSheet
 from nax import PROJECT_DIR, SCREEN_HEIGHT, COLORS
 
@@ -18,6 +19,13 @@ class Player(pygame.sprite.Sprite):
         self.is_die = False
         self.is_hit = False
         self.hit_times = 0
+        self.lives = 3
+        self.hearts = pygame.sprite.Group()
+
+        i = 0
+        while i < self.lives:
+            self.hearts.add(Background(PROJECT_DIR+"/assets/HUD/hud_heartFull.png", [15 + (i*70), 20]))
+            i += 1
 
         # Make our top-left corner the passed-in location.
         sprite_sheet = SpriteSheet(PROJECT_DIR+"/assets/Player/p1_walk/p1_walk.png")
@@ -174,6 +182,15 @@ class Player(pygame.sprite.Sprite):
         for block in block_hit_list:
             diff = self.rect.x - block.rect.x
             self.is_hit = True
+            self.lives -= 1
+
+            if self.lives >= 0:
+                self.hearts.remove(self.hearts.sprites()[-1])
+
+            if self.lives == 0:
+                self.is_die = True
+
+            # self.hearts.remove(self.hearts.)
             if (diff > 0):
                 self.change_x = 15
                 self.change_y = 15

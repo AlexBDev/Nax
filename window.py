@@ -1,8 +1,5 @@
 import pygame
-from time import sleep
 from nax.game import Game
-from nax.timer import GameTimer
-from nax import COLORS, SCREEN_WIDTH
 
 
 class Window(object):
