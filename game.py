@@ -14,19 +14,20 @@ class Game():
         self.level = Level01(self.player)
         self.platform_sprites = self.level.get_sprites()
         self.player.walls = self.platform_sprites
+        self.player.enemy_list = self.level.enemy_list
         self.all_sprite_list = pygame.sprite.Group()
         self.all_sprite_list.add(self.player)
         self.timer.start()
 
-    def event(self, event, done):
+    def event(self, event):
         if event.type == pygame.QUIT:
-            done = True
+            return True
 
         elif self.is_player_win():
             self.timer.stop()
             self.display_win_screen(self.screen)
             sleep(5)
-            done = True
+            return True
 
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
@@ -45,21 +46,21 @@ class Game():
                 self.player.jump(1)
                 self.player.can_jump = False
 
-    def update(self):
-        if self.player.rect.right >= 500:
-            diff = self.player.rect.right - 500
-            self.player.rect.right = 500
-            for wall in self.platform_sprites:
-                wall.rect.x += -diff
+        return False
 
-        if self.player.rect.left <= 120:
-            diff = 120 - self.player.rect.left
-            self.player.rect.left = 120
-            for wall in self.platform_sprites:
-                wall.rect.x += diff
+    def update(self):
+        for enemy in self.level.enemy_list:
+            if enemy.is_die:
+                self.level.enemy_list.remove(enemy)
 
         self.all_sprite_list.update()
         self.level.update()
+
+        if self.player.is_die:
+            self.display_die_screen()
+            sleep(6)
+            pygame.event.post(pygame.event.Event(pygame.QUIT))
+
 
     def draw(self):
         self.level.draw(self.screen)
@@ -68,6 +69,16 @@ class Game():
 
     def is_player_win(self):
         return self.player.distance >= self.level.get_position_win_x()
+
+    def display_die_screen(self):
+        font = pygame.font.SysFont(None, 48)
+        text = font.render('You die', True, COLORS.get('RED'), None)
+        text_rect = text.get_rect()
+        text_rect.centerx = self.screen.get_rect().centerx
+        text_rect.centery = self.screen.get_rect().centery
+        self.screen.blit(text, text_rect)
+        self.all_sprite_list.draw(self.screen)
+        pygame.display.flip()
 
     def display_win_screen(self, screen):
         font = pygame.font.SysFont(None, 48)

@@ -15,6 +15,9 @@ class Player(pygame.sprite.Sprite):
         self.walking_frames_l = []
         self.walking_frames_r = []
         self.distance = 0
+        self.is_die = False
+        self.is_hit = False
+        self.hit_times = 0
 
         # Make our top-left corner the passed-in location.
         sprite_sheet = SpriteSheet(PROJECT_DIR+"/assets/Player/p1_walk/p1_walk.png")
@@ -65,7 +68,6 @@ class Player(pygame.sprite.Sprite):
         # Set a reference to the image rect.
         self.rect = self.image.get_rect()
 
-
         # What direction is the player facing?
         self.direction = "R"
 
@@ -73,6 +75,7 @@ class Player(pygame.sprite.Sprite):
         self.change_x = 0
         self.change_y = 0
         self.walls = None
+        self.enemy_list = None
 
         # Custom
         self.speed = speed
@@ -104,9 +107,16 @@ class Player(pygame.sprite.Sprite):
 
         # Move left/right
         self.rect.x += self.change_x
-        self.distance += self.change_x
-        pos = self.rect.x
+        # self.distance += self.change_x
+        if self.is_hit:
+            self.hit_times += 1
+            if self.hit_times == 10:
+                self.is_hit = False
+                self.change_y = 0
+                self.change_x = 0
+                self.hit_times = 0
 
+        pos = self.rect.x
         if self.direction == "R":
             frame = (pos // 30) % len(self.walking_frames_r)
             self.image = self.walking_frames_r[frame]
@@ -115,6 +125,7 @@ class Player(pygame.sprite.Sprite):
             self.image = self.walking_frames_l[frame]
 
         self._calc_hit_walls()
+        self._calc_collide_enemies()
 
     def _calc_hit_walls(self):
         # See if we hit anything
@@ -157,3 +168,19 @@ class Player(pygame.sprite.Sprite):
         if self.rect.y >= SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
             self.change_y = 0
             self.rect.y = SCREEN_HEIGHT - self.rect.height
+
+    def _calc_collide_enemies(self):
+        block_hit_list = pygame.sprite.spritecollide(self, self.enemy_list, False)
+        for block in block_hit_list:
+            diff = self.rect.x - block.rect.x
+            self.is_hit = True
+            if (diff > 0):
+                self.change_x = 15
+                self.change_y = 15
+            else:
+                self.change_x = -15
+                self.change_y = -15
+
+            return
+
+            # self.is_die = True

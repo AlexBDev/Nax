@@ -21,12 +21,12 @@ class Window(object):
 
         while not done:
             for event in pygame.event.get():
-                self.game.event(event, done)
+                done = self.game.event(event)
 
+            pygame.display.flip()
             self.game.update()
             self.game.draw()
             self.clock.tick(60)
 
-            pygame.display.flip()
 
         pygame.quit()

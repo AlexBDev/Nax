@@ -1,9 +1,6 @@
 import pygame
-from nax import COLORS
-
-# Screen dimensions
-SCREEN_WIDTH = 960
-SCREEN_HEIGHT = 320
+from nax.spritesheet import SpriteSheet
+from nax import PROJECT_DIR, SCREEN_HEIGHT, COLORS
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -11,9 +8,12 @@ class Enemy(pygame.sprite.Sprite):
     controls. """
 
     # Constructor function
-    def __init__(self, x, y, speed=10):
+    def __init__(self, x, y, speed=5):
         # Call the parent's constructor
         super().__init__()
+
+        self.player = None
+        self.is_die = False
 
         # Set height, width
         self.image = pygame.Surface([15, 15])
@@ -37,10 +37,10 @@ class Enemy(pygame.sprite.Sprite):
         self.change_x = 0
 
     def go_right(self):
-        self.change_x += self.speed
+        self.rect.x += self.speed
 
     def go_left(self):
-        self.change_x += -1 * self.speed
+        self.rect.x += -self.speed
 
     def jump(self, x):
         """ Change the speed of the player. """
@@ -49,14 +49,15 @@ class Enemy(pygame.sprite.Sprite):
     def update(self):
         """ Move the player. """
         # Gravity
+        self._calc_player()
         self._calc_grav()
 
         # The game exit, when player fall into the void
         if self.rect.y > SCREEN_HEIGHT:
-            pygame.event.post(pygame.event.Event(pygame.QUIT))
+            self.is_die = True
 
         # Move left/right
-        self.rect.x += self.change_x
+        # self.rect.x += self.change_x
         self._calc_hit_walls()
 
     def _calc_hit_walls(self):
@@ -94,9 +95,15 @@ class Enemy(pygame.sprite.Sprite):
         else:
             self.change_y += 1.35
 
-        # if self.change_y > SCREEN_HEIGHT:
-        #     pygame.event.post(pygame.QUIT)
         # See if we are on the ground.
-        if self.rect.y >= SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
-            self.change_y = 0
-            self.rect.y = SCREEN_HEIGHT - self.rect.height
+        # if self.rect.y >= SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
+        #     self.change_y = 0
+        #     self.rect.y = SCREEN_HEIGHT - self.rect.height
+
+    def _calc_player(self):
+        diff = self.player.rect.x - self.rect.x
+
+        if diff > 0 and diff < 150:
+            self.go_right()
+        elif diff > -150 and diff < 0:
+            self.go_left()

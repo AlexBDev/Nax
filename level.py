@@ -18,33 +18,34 @@ class Level(metaclass=abc.ABCMeta):
     def update(self):
         self.platform_list.update()
         self.enemy_list.update()
+        self.shift_world()
 
     def draw(self, screen):
-        screen.fill(COLORS.get('BLUE'))
-        screen.blit(self.background, (self.world_shift // 3, 0))
-
         # Draw all the sprite lists that we have
         self.platform_list.draw(screen)
         self.enemy_list.draw(screen)
 
-    def shift_world(self, shift_x):
-        """ When the user moves left/right and we need to scroll everything: """
-
-        # Keep track of the shift amount
-        self.world_shift += shift_x
-
-        # Go through all the sprite lists and shift
-        for platform in self.platform_list:
-            platform.rect.x += shift_x
-
-        for enemy in self.enemy_list:
-            enemy.rect.x += shift_x
-
-    def update(self):
-        """ Update everything in this level."""
-        self.platform_list.update()
-        self.enemy_list.update()
-
     def add_platforms(self, platforms):
         for platform in platforms:
             self.platform_list.add(Platform(platform[0], platform[1], platform[2], platform[3]))
+
+    def shift_world(self):
+        """ When the user moves left/right and we need to scroll everything: """
+
+        if self.player.rect.right >= 500:
+            diff = self.player.rect.right - 500
+            self.player.rect.right = 500
+            self.background.rect.x += diff
+            for platform in self.platform_list:
+                platform.rect.x += -diff
+            for enemy in self.enemy_list:
+                enemy.rect.x += -diff
+
+        if self.player.rect.left <= 120:
+            diff = 120 - self.player.rect.left
+            self.player.rect.left = 120
+            self.background.rect.x += diff
+            for platform in self.platform_list:
+                platform.rect.x += diff
+            for enemy in self.enemy_list:
+                enemy.rect.x += diff
