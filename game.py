@@ -43,10 +43,6 @@ class Game():
         return False
 
     def update(self):
-        print(self.player.is_die)
-        if self.player.is_die:
-            self.display_die_screen()
-            sleep(6)
 
         for enemy in self.level.enemy_list:
             if enemy.is_die:
@@ -60,8 +56,10 @@ class Game():
             sleep(6)
             pygame.event.post(pygame.event.Event(pygame.QUIT))
 
-
-            # pygame.event.post(pygame.event.Event(pygame.QUIT))
+        if self.player.is_die:
+            self.display_die_screen()
+            sleep(6)
+            pygame.event.post(pygame.event.Event(pygame.QUIT))
 
 
     def draw(self):

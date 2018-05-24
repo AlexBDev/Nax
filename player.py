@@ -113,9 +113,6 @@ class Player(pygame.sprite.Sprite):
         # Gravity
         self._calc_grav()
 
-        # The game exit, when player fall into the void
-        if self.rect.y > SCREEN_HEIGHT:
-            pygame.event.post(pygame.event.Event(pygame.QUIT))
 
         # Move left/right
         self.rect.x += self.change_x
@@ -178,12 +175,11 @@ class Player(pygame.sprite.Sprite):
         else:
             self.change_y += 1.35
 
-        if self.change_y > SCREEN_HEIGHT and not setting.is_dev_mode():
+        if self.rect.y > SCREEN_HEIGHT and not setting.is_dev_mode():
             self.is_die = True
-            # pygame.event.post(pygame.QUIT)
-        # elif self.rect.y >= SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
-        #     self.change_y = 0
-        #     self.rect.y = SCREEN_HEIGHT - self.rect.height
+        elif self.rect.y >= SCREEN_HEIGHT - self.rect.height and self.change_y >= 0 and setting.is_dev_mode():
+            self.change_y = 0
+            self.rect.y = SCREEN_HEIGHT - self.rect.height
 
     def _calc_collide_enemies(self):
         block_hit_list = pygame.sprite.spritecollide(self, self.enemy_list, False)
