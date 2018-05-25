@@ -5,12 +5,30 @@ from nax import PROJECT_DIR, COLORS
 from nax.timer import GameTimer
 from time import sleep
 from nax.setting import setting
+from os.path import exists
+
 
 class Game():
     def __init__(self, screen):
+
+        self.high_score = 'Any'
+        if not exists(PROJECT_DIR+'/scores.data'):
+            with open(PROJECT_DIR + '/scores.data', 'a') as file:
+                file.close()
+
+        with open(PROJECT_DIR+'/scores.data', 'r') as content_file:
+            content = content_file.read()
+            scores = []
+            for score in content.split("\n"):
+                if score.strip():
+                    scores.append(float(score))
+
+            if len(scores):
+                self.high_score = sorted(scores, key=float)[0]
+
         self.screen = screen
         self.timer = GameTimer()
-        self.player = Player(0,         0, 15)
+        self.player = Player(0, 0, 15)
         self.level = Level01(self.player)
         self.platform_sprites = self.level.get_sprites()
         self.player.walls = self.platform_sprites
@@ -20,7 +38,6 @@ class Game():
         self.timer.start()
         pygame.mixer.music.load(PROJECT_DIR + "/assets/music.mp3")
         pygame.mixer.music.play(-1)
-
 
     def event(self, event):
         if event.type == pygame.QUIT:
@@ -55,6 +72,7 @@ class Game():
         self.level.update()
 
         if self.player.has_win:
+            self._save_score()
             self.display_win_screen(self.screen)
             sleep(.5)
             pygame.event.post(pygame.event.Event(pygame.QUIT))
@@ -64,6 +82,10 @@ class Game():
             sleep(.5)
             pygame.event.post(pygame.event.Event(pygame.QUIT))
 
+    def _save_score(self):
+        file = open(PROJECT_DIR+'/scores.data', 'a')
+        file.write("%0.2f" % self.timer.get_time() + "\n")
+        file.close()
 
     def draw(self):
         self.level.draw(self.screen)
@@ -71,6 +93,7 @@ class Game():
         self.all_sprite_list.draw(self.screen)
         self.player.hearts.draw(self.screen)
         self.timer.display(self.screen)
+        self.display_high_score_screen()
 
     def is_player_win(self):
         return self.player.distance >= self.level.get_position_win_x()
@@ -93,4 +116,14 @@ class Game():
         text_rect.centery = screen.get_rect().centery
         screen.blit(text, text_rect)
         self.all_sprite_list.draw(screen)
+        pygame.display.flip()
+
+    def display_high_score_screen(self):
+        font = pygame.font.SysFont(None, 18)
+        text = font.render('HIGH SCORE : '+str(self.high_score), True, COLORS.get('BLACK'), None)
+        text_rect = text.get_rect()
+        text_rect.centerx = 75
+        text_rect.centery = 100
+        self.screen.blit(text, text_rect)
+        self.all_sprite_list.draw(self.screen)
         pygame.display.flip()
